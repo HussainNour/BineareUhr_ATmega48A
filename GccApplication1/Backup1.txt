@@ -1,0 +1,104 @@
+/*
+ * GccApplication1.c
+ *
+ * Created: 01.12.2023 17:11:40
+ * Author : nour
+ */ 
+
+#define F_CPU 1000000UL
+#include <avr/io.h>
+#include <util/delay.h>
+
+void displayTime(int hours, int minutes, int seconds) {
+	// Display hours on port C (use only 5 bits, i.e., PC0-PC4)
+	PORTC = hours & 0x1F; // 0x1F: 00011111
+
+	// Display minutes on port D (use only 6 bits, i.e., PD0-PD5)
+	PORTD = minutes & 0x3F; // 0x3F: 00111111
+
+	// Ignore seconds for now, you can add a display for seconds if needed
+}
+
+
+int main(void) {
+    DDRC |= (0x3F); // Set PC0-PC5 as outputs for hours
+    DDRD |= 0xFF;   // Set all PD0-PD7 as outputs for minutes
+
+    // Set PB0, PB1, PB2 as inputs for buttons
+    DDRB &= ~(1 << PB0);
+    DDRB &= ~(1 << PB1);
+    DDRB &= ~(1 << PB2);
+
+    // Enable internal pull-up resistors for the buttons
+    PORTB |= (1 << PB0) | (1 << PB1) | (1 << PB2);
+
+    int hours = 0;
+    int minutes = 0;
+    int seconds = 0;
+    int Mode = 24;
+    
+    while (1) {
+        // Check if the hour button is pressed
+        if (!(PINB & (1 << PB0))) {
+            _delay_ms(50); // Debouncing
+            while (!(PINB & (1 << PB0))); // Wait for button release
+            hours++;
+            if (hours == Mode) {
+                hours = 0;
+            }
+        }
+
+        // Check if the minute button is pressed
+        if (!(PINB & (1 << PB1))) {
+            _delay_ms(50); // Debouncing
+            while (!(PINB & (1 << PB1))); // Wait for button release
+            minutes++;
+            if (minutes == 60) {
+                minutes = 0;
+            }
+        }
+        
+        // Check if the reset button is pressed
+        if (!(PINB & (1 << PB2))) {
+            _delay_ms(50); // Debouncing
+            while (!(PINB & (1 << PB2))); // Wait for button release
+            hours = 0;
+            minutes = 0;
+            seconds = 0;
+            if (Mode == 24) {
+                Mode = 12;
+            } else {
+                Mode = 24;
+            }
+        }
+
+        // Update time every second
+        _delay_ms(5);
+
+        // Display the updated time
+        displayTime(hours, minutes, seconds);
+        
+        // Increment seconds
+        seconds++;
+
+        if (seconds == 60) {
+            seconds = 0;
+
+            // Increment minutes
+            minutes++;
+
+            if (minutes == 60) {
+                minutes = 0;
+
+                // Increment hours
+                hours++;
+
+                if (hours == Mode) {
+                    hours = 0;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
