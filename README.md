@@ -5,7 +5,7 @@ Klar! Hier ist eine kürzere und prägnante Version für die GitHub-Repository-B
 # Binäre Uhr – ATmega48A
 
 Dieses Repository enthält den Quellcode für eine binäre Uhr, die mit einem **ATmega48A** Mikrocontroller programmiert wurde. Eine detaillierte Erklärung zur Funktionsweise und Implementierung findest du in der beigefügten PDF-Datei:  
-👉 **[Binäre Uhr.pdf](./doc/Bineare_Uhr.pdf)**
+👉 **[Binäre Uhr.pdf](./Bineare_Uhr.pdf)**
 
 ## 📌 Projektbeschreibung
 
